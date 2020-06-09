@@ -24,8 +24,6 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
             descSource.convertTo(descSource, CV_32F);
             descRef.convertTo(descRef, CV_32F);
         }
-
-        //... TODO : implement FLANN matching
       	
         matcher = cv::FlannBasedMatcher::create();
 
@@ -65,6 +63,10 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
         float patternScale = 1.0f; // apply this scale to the pattern used for sampling the neighbourhood of a keypoint.
 
         extractor = cv::BRISK::create(threshold, octaves, patternScale);
+    }
+    else if (descriptorType.compare("BRIEF") == 0) {
+        
+        extractor = cv::xfeatures2d::BriefDescriptorExtractor::create();
     }
     else if (descriptorType.compare("FAST") == 0) {
         
@@ -171,6 +173,8 @@ void detKeypointsHarris(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis
 
 void detKeypointsModern(vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis) {
     
+    
+    double t = (double)cv::getTickCount();
 
     cv::Ptr<cv::FeatureDetector> detector;
 
@@ -190,7 +194,6 @@ void detKeypointsModern(vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::stri
         detector = cv::BRISK::create();
     }
 
-    double t = (double)cv::getTickCount();
     detector->detect(img, keypoints);
 
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
