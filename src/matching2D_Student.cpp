@@ -171,8 +171,6 @@ void detKeypointsHarris(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis
 
 void detKeypointsModern(vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis) {
     
-    
-    double t = (double)cv::getTickCount();
 
     cv::Ptr<cv::FeatureDetector> detector;
 
@@ -192,6 +190,7 @@ void detKeypointsModern(vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::stri
         detector = cv::BRISK::create();
     }
 
+    double t = (double)cv::getTickCount();
     detector->detect(img, keypoints);
 
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
