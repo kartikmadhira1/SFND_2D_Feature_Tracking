@@ -99,11 +99,17 @@ int main(int argc, const char *argv[])
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
 
         // only keep keypoints on the preceding vehicle
+        vector<cv::KeyPoint> carKeypoints; // create empty feature list for current image
+
         bool bFocusOnVehicle = true;
         cv::Rect vehicleRect(535, 180, 180, 150);
-        if (bFocusOnVehicle)
-        {
-            // ...
+        if (bFocusOnVehicle) {
+            for (int i = 0; keypoints.size(); i++) {
+                if (vehicleRect.contains(keypoints[i].pt)) {
+                    carKeypoints.push_back(keypoints[i]);
+                }
+            }
+            keypoints = carKeypoints;
         }
 
         //// EOF STUDENT ASSIGNMENT

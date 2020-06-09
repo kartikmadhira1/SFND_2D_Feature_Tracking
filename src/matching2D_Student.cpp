@@ -13,12 +13,22 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 
     if (matcherType.compare("MAT_BF") == 0)
     {
-        int normType = cv::NORM_HAMMING;
+        int normType = descriptorType.compare("DES_BINARY") == 
+                        0 ? cv::NORM_HAMMING : cv::NORM_L2;        
         matcher = cv::BFMatcher::create(normType, crossCheck);
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
-        // ...
+        if (descSource.type() != CV_32F)
+        { // OpenCV bug workaround : convert binary descriptors to floating point due to a bug in current OpenCV implementation
+            descSource.convertTo(descSource, CV_32F);
+            descRef.convertTo(descRef, CV_32F);
+        }
+
+        //... TODO : implement FLANN matching
+      	
+        matcher = cv::FlannBasedMatcher::create();
+
     }
 
     // perform matching task
@@ -30,7 +40,16 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     else if (selectorType.compare("SEL_KNN") == 0)
     { // k nearest neighbors (k=2)
 
-        // ...
+      	vector<vector<cv::DMatch>> match_2;
+        matcher->knnMatch(descSource, descRef, match_2, 2); // Finds the best match for each descriptor in desc1
+       	vector<cv::DMatch> goodMatches;
+      	for (int i = 0;i < match_2.size();i++) {
+        	if (match_2[i][0].distance < 0.8*match_2[i][1].distance) {
+            	goodMatches.emplace_back(match_2[i][0]);
+            }
+        }
+      	matches = goodMatches;
+      
     }
 }
 
